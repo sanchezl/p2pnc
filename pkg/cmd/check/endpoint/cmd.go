@@ -30,7 +30,7 @@ func run(cmd *cobra.Command, args []string) {
 }
 
 func checkAddress(ctx context.Context, address string) {
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(1 * time.Second)
 	for {
 		ctx, latencyInfo := WithLatencyInfoCapture(ctx)
 		dialer := &net.Dialer{}
@@ -59,18 +59,18 @@ func isDNSError(err error) bool {
 func logCheckActions(address string, checkErr error, latency *LatencyInfo) {
 	host, _, _ := net.SplitHostPort(address)
 	if isDNSError(checkErr) {
-		klog.Infof("%7s | %-11s | %5dms | 🔍❌ Failure looking up host %s: %v", "Failure", "DNSDone", latency.DNS.Milliseconds(), host, checkErr)
+		klog.Infof("%7s | %-11s | %6dms | 🔍❌ Failure looking up host %s: %v", "Failure", "DNSDone", latency.DNS.Milliseconds(), host, checkErr)
 		return
 	}
 	if latency.DNS != 0 {
-		klog.Infof("%7s | %-11s | %5dms | 🔍✔ Resolved host name %s successfully", "Success", "DNSDone", latency.DNS.Milliseconds(), host)
+		klog.Infof("%7s | %-11s | %6dms | 🔍✔ Resolved host name %s successfully", "Success", "DNSDone", latency.DNS.Milliseconds(), host)
 	}
 
 	if checkErr != nil {
-		klog.Infof("%7s | %-11s | %5dms | 🔌❌ Failed to establish a TCP connection to %s: %v", "Failure", "ConnectDone", latency.Connect.Milliseconds(), address, checkErr)
+		klog.Infof("%7s | %-11s | %6dms | 🔌❌ Failed to establish a TCP connection to %s: %v", "Failure", "ConnectDone", latency.Connect.Milliseconds(), address, checkErr)
 		return
 	}
-	klog.Infof("%7s | %-11s | %5dms | 🔌✔ TCP connection to %v succeeded", "Success", "ConnectDone", latency.Connect.Milliseconds(), address)
+	klog.Infof("%7s | %-11s | %6dms | 🔌✔ TCP connection to %v succeeded", "Success", "ConnectDone", latency.Connect.Milliseconds(), address)
 }
 
 func validatePositionalArgs(cmd *cobra.Command, args []string) error {
