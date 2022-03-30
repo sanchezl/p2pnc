@@ -1,4 +1,4 @@
-FROM golang:1.13
+FROM golang:1.17
 WORKDIR /go/src/app
 COPY . .
 RUN go build -mod=vendor ./cmd/p2pnc

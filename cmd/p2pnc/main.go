@@ -3,17 +3,20 @@ package main
 import (
 	"github.com/sanchezl/p2pnc/pkg/cmd/check"
 	"github.com/spf13/cobra"
-	"k8s.io/component-base/logs"
+	"k8s.io/klog/v2"
 )
 
 func main() {
-	logs.InitLogs()
-	defer logs.FlushLogs()
-	cmd := new()
-	cmd.Execute()
+	klog.InitFlags(nil)
+	defer klog.Flush()
+	cmd := newP2PNCCommand()
+	err := cmd.Execute()
+	if err != nil {
+		klog.Fatal(err)
+	}
 }
 
-func new() *cobra.Command {
+func newP2PNCCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "p2pnc",
 		Short: "Point-to-point network check tool",
