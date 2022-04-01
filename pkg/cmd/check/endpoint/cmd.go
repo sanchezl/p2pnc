@@ -4,6 +4,8 @@ import (
 	"context"
 	"net"
 	"net/http/httptrace"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -21,7 +23,8 @@ func New() *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
 	//TODO make this performant, cancelable, timeouts, etc.
 	for _, address := range args {
 		go checkAddress(ctx, address)
